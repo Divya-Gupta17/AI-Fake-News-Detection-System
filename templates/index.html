@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriFact AI - Your Trusted News Compass</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #1f2933;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-color: #f3f4f6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            color: #111827;
+            font-weight: 700;
+        }
+
+        .lead {
+            font-weight: 300;
+            color: #4b5563;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(90deg, #0f172a, #1f2937) !important;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.4);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #f9fafb !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(249, 250, 251, 0.8) !important;
+            font-weight: 400;
+            transition: color 0.2s ease-in-out;
+            margin-right: 10px;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: #ffffff !important;
+        }
+
+        .navbar .btn {
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 7px 16px;
+            font-size: 0.9rem;
+        }
+
+        .navbar .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+            border: none;
+        }
+
+        .navbar .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #0284c7);
+        }
+
+        .navbar .btn-outline-light {
+            border-color: #e5e7eb;
+            color: #f9fafb;
+        }
+
+        .navbar .btn-outline-light:hover {
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: radial-gradient(circle at top left, #1d4ed8 0, transparent 50%),
+                        radial-gradient(circle at bottom right, #0ea5e9 0, transparent 45%),
+                        linear-gradient(135deg, #0f172a, #020617);
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 96px;
+            padding-bottom: 72px;
+            color: #e5e7eb;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(248, 250, 252, 0.06), transparent 55%),
+                radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.12), transparent 55%);
+            opacity: 0.95;
+            pointer-events: none;
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            color: #f9fafb;
+        }
+
+        .hero-section p.lead {
+            font-size: 1.1rem;
+            color: #d1d5db;
+        }
+
+        .hero-section .btn {
+            border-radius: 999px;
+            padding: 11px 22px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .hero-section .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+            border: none;
+        }
+
+        .hero-section .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #0284c7);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.45);
+        }
+
+        .hero-section .btn-outline-light {
+            border-color: #e5e7eb;
+            color: #e5e7eb;
+        }
+
+        .hero-section .btn-outline-light:hover {
+            background-color: #f9fafb;
+            color: #111827;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.35);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            color: #e5e7eb;
+            font-size: 0.82rem;
+            margin-bottom: 14px;
+        }
+
+        .hero-badge-pill {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 0, #e0f2fe, #7dd3fc 45%, #0ea5e9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #0f172a;
+        }
+
+        .hero-image {
+            max-width: 85%;
+            height: auto;
+            filter: drop-shadow(0 14px 30px rgba(15, 23, 42, 0.7));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* What We Do */
+        .what-we-do {
+            padding-top: 72px;
+            padding-bottom: 72px;
+            background-color: #f9fafb;
+        }
+
+        .section-heading {
+            position: relative;
+            padding-bottom: 12px;
+            margin-bottom: 32px;
+        }
+
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+            border-radius: 999px;
+        }
+
+        .feature-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+        }
+
+        .feature-card i {
+            color: #2563eb;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            color: #4b5563;
+        }
+
+        .feature-image {
+            max-width: 90%;
+            height: auto;
+            margin-top: 16px;
+            border-radius: 0.5rem;
+        }
+
+        /* Dynamic News Feed */
+        .dynamic-news-feed {
+            padding-top: 72px;
+            padding-bottom: 72px;
+            background: #e5f3ff;
+        }
+
+        .dynamic-news-feed .btn {
+            border-radius: 999px;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            padding-top: 72px;
+            padding-bottom: 72px;
+            background-color: #f9fafb;
+        }
+
+        .contact-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            padding: 28px;
+        }
+
+        .contact-card .form-control {
+            border-radius: 0.5rem;
+        }
+
+        .contact-card .btn {
+            border-radius: 999px;
+        }
+
+        /* CTA Footer */
+        .cta-footer {
+            background: linear-gradient(135deg, #0f172a, #111827);
+            padding-top: 72px;
+            padding-bottom: 72px;
+            position: relative;
+            color: #e5e7eb;
+        }
+
+        .cta-footer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%),
+                linear-gradient(45deg, rgba(15,23,42,0.4) 0%, transparent 60%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .cta-footer .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-footer .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+            border: none;
+        }
+
+        .cta-footer .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #0284c7);
+        }
+
+        .cta-footer .btn-outline-light {
+            border-color: #e5e7eb;
+            color: #e5e7eb;
+        }
+
+        .cta-footer .btn-outline-light:hover {
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #020617;
+            color: rgba(249, 250, 251, 0.6);
+            padding-top: 22px;
+            padding-bottom: 22px;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: rgba(249, 250, 251, 0.6);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: rgba(249, 250, 251, 0.9);
+        }
+
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background-color: #0b1220;
+                padding: 12px;
+                border-radius: 0.75rem;
+                margin-top: 10px;
+            }
+            .hero-section h1 {
+                font-size: 2.4rem;
+            }
+            .hero-section p.lead {
+                font-size: 1rem;
+            }
+            .hero-image {
+                max-width: 70%;
+                margin-top: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home_page') }}">
+                <img src="https://via.placeholder.com/30x30/1f2937/ffffff?text=AI" alt="VeriFact AI Logo" width="30" height="30" class="d-inline-block align-text-top me-2">
+                VeriFact AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('home_page') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about_page') }}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('features_page') }}">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+
+                    {% if session.get('user_id') %}
+                        {% if session.get('is_admin') %}
+                        <li class="nav-item">
+                            <a class="btn btn-primary ms-lg-3 mb-2 mb-lg-0" href="{{ url_for('admin_dashboard_page') }}">Admin Dashboard</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-primary ms-lg-3 mb-2 mb-lg-0" href="{{ url_for('dashboard_page') }}">Dashboard</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="btn btn-outline-light ms-lg-2" href="{{ url_for('route_logout_get') }}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-outline-light ms-lg-3 mb-2 mb-lg-0" href="{{ url_for('login_page') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary ms-lg-2" href="{{ url_for('register_page') }}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section text-center text-lg-start">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7 mb-4 mb-lg-0">
+                    {% if session.get('user_id') %}
+                        <div class="hero-badge">
+                            <div class="hero-badge-pill">👋</div>
+                            <span>You are logged in as <strong>{{ session.get('username') }}</strong>.</span>
+                        </div>
+                    {% else %}
+                        <div class="hero-badge">
+                            <div class="hero-badge-pill">🧠</div>
+                            <span>AI-powered fake news detection & personalized news aggregation</span>
+                        </div>
+                    {% endif %}
+
+                    <h1 class="fw-bold mb-3">VeriFact AI: Your Trusted News Compass</h1>
+                    <p class="lead mb-4">Navigate the information ocean with AI that detects misinformation, rates credibility, and curates news that matters to you.</p>
+
+                    {% if session.get('user_id') %}
+                        {% if session.get('is_admin') %}
+                            <a href="{{ url_for('admin_dashboard_page') }}" class="btn btn-primary btn-lg me-3 mb-2">Go to Admin Dashboard</a>
+                        {% else %}
+                            <a href="{{ url_for('dashboard_page') }}" class="btn btn-primary btn-lg me-3 mb-2">Go to Dashboard</a>
+                        {% endif %}
+                        <a href="#contact" class="btn btn-outline-light btn-lg mb-2">Need Help? Contact Us</a>
+                    {% else %}
+                        <a href="{{ url_for('register_page') }}" class="btn btn-primary btn-lg me-3 mb-2">Get Started</a>
+                        <a href="{{ url_for('features_page') }}" class="btn btn-outline-light btn-lg mb-2">Learn More</a>
+                    {% endif %}
+                </div>
+                <div class="col-lg-5 d-flex justify-content-center justify-content-lg-end">
+                    <img src="https://via.placeholder.com/400x300/1e293b/ffffff?text=AI+Compass" alt="AI Compass" class="img-fluid hero-image">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- What We Do Section -->
+    <section class="what-we-do">
+        <div class="container">
+            <h2 class="text-center mb-3 display-6 fw-bold section-heading">Unmasking Misinformation, Empowering Your Perspective.</h2>
+            <p class="lead text-center mb-5 px-lg-5">
+                VeriFact AI combines cutting-edge transformers, credibility scoring, and user feedback to help you see which news is trustworthy and which might be fake.
+            </p>
+
+            <div class="row text-center">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card h-100">
+                        <i class="fas fa-check-circle fa-3x mb-3"></i>
+                        <h3 class="h4 fw-bold">AI-Powered Fake News Detection</h3>
+                        <p>Pretrained transformer models analyze each article and classify it as Real or Fake with confidence scores.</p>
+                        <img src="https://via.placeholder.com/200x150/e0f2fe/000000?text=Detection" alt="AI Analyzing Text" class="img-fluid mt-3 feature-image">
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card h-100">
+                        <i class="fas fa-newspaper fa-3x mb-3"></i>
+                        <h3 class="h4 fw-bold">Personalized News Aggregation</h3>
+                        <p>Aggregate news from multiple sources and filter them based on your interests and preferences.</p>
+                        <img src="https://via.placeholder.com/200x150/e0f2fe/000000?text=Dashboard" alt="Personalized Dashboard" class="img-fluid mt-3 feature-image">
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card h-100">
+                        <i class="fas fa-shield-alt fa-3x mb-3"></i>
+                        <h3 class="h4 fw-bold">Credibility & User Reports</h3>
+                        <p>Each article gets a credibility score based on model output, source reputation, fact-checking, and user reports.</p>
+                        <img src="https://via.placeholder.com/200x150/e0f2fe/000000?text=Credibility" alt="Credibility Score" class="img-fluid mt-3 feature-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic News Feed Section -->
+    <section class="dynamic-news-feed">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-3">Discover Curated News</h2>
+            {% if session.get('user_id') %}
+                <p class="lead mb-4">Jump into your AI-powered dashboard to see Real vs Fake news and explore credibility scores.</p>
+                {% if session.get('is_admin') %}
+                    <a href="{{ url_for('admin_dashboard_page') }}" class="btn btn-primary btn-lg me-3">Open Admin Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('dashboard_page') }}" class="btn btn-primary btn-lg me-3">Open My Dashboard</a>
+                {% endif %}
+            {% else %}
+                <p class="lead mb-4">Log in or register to get your personalized, fact-checked news feed powered by VeriFact AI.</p>
+                <a href="{{ url_for('login_page') }}" class="btn btn-primary btn-lg me-3">Login Now</a>
+                <a href="{{ url_for('register_page') }}" class="btn btn-outline-secondary btn-lg">Register</a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="row align-items-start g-4">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="display-6 fw-bold mb-3">Contact Us</h2>
+                    <p class="lead mb-3">
+                        Have feedback, found a bug, or want to improve the fake news detection model? Reach out to us.
+                    </p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-envelope me-2 text-primary"></i> support@verifact-ai.com</li>
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i> Your Institute / City</li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <div class="contact-card">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" placeholder="Your Name">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" placeholder="you@example.com">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control" rows="4" placeholder="Your message..."></textarea>
+                            </div>
+                            <button type="button" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Footer -->
+    <section class="cta-footer text-center">
+        <div class="container">
+            <h2 class="display-6 fw-bold mb-3">Ready to See the Truth?</h2>
+            <p class="lead mb-4">Join VeriFact AI and experience AI-driven fake news detection with a clear, intuitive dashboard.</p>
+            {% if session.get('user_id') %}
+                {% if session.get('is_admin') %}
+                    <a href="{{ url_for('admin_dashboard_page') }}" class="btn btn-primary btn-lg me-3">Go to Admin Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('dashboard_page') }}" class="btn btn-primary btn-lg me-3">Go to Dashboard</a>
+                {% endif %}
+                <a href="#contact" class="btn btn-outline-light btn-lg">Contact Us</a>
+            {% else %}
+                <a href="{{ url_for('register_page') }}" class="btn btn-primary btn-lg me-3">Sign Up Now</a>
+                <a href="#contact" class="btn btn-outline-light btn-lg">Contact Us</a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 VeriFact AI. All rights reserved.</p>
+            <ul class="list-inline mb-0">
+                <li class="list-inline-item"><a href="{{ url_for('privacy_page') }}">Privacy Policy</a></li>
+                <li class="list-inline-item"><a href="{{ url_for('terms_page') }}">Terms of Service</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

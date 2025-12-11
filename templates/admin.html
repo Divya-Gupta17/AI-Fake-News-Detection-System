@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VeriFact AI — Admin Dashboard</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#0ea5e9;
+      --accent:#60a5fa;
+      --muted:#6b7280;
+      --success:#10b981;
+      --danger:#ef4444;
+      --card:#ffffff;
+    }
+    body{font-family:"Inter",sans-serif;background:linear-gradient(180deg,#f7fbff,#eef8ff);color:#0f172a;margin:0}
+    .topbar{background:white;border-bottom:1px solid rgba(2,132,199,0.06);padding:10px 20px}
+    .brand{font-weight:700;color:var(--primary)}
+    .admin-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .card-elev{border-radius:12px;background:var(--card);box-shadow:0 8px 28px rgba(2,80,140,0.06);border:1px solid rgba(2,80,140,0.04)}
+    .mini-badge{font-size:.78rem;padding:.25rem .5rem;border-radius:999px}
+    .badge-real{background:rgba(16,185,129,0.12);color:var(--success);border:1px solid rgba(16,185,129,0.18)}
+    .badge-fake{background:rgba(239,68,68,0.08);color:var(--danger);border:1px solid rgba(239,68,68,0.12)}
+    .cred-pill{padding:.25rem .5rem;border-radius:8px;font-weight:700}
+    .controls .btn{border-radius:10px}
+    .table-responsive { max-height:62vh; overflow:auto; }
+    .small-muted{color:var(--muted);font-size:0.9rem}
+    @media (max-width:900px){
+      .desktop-only{display:none}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <nav class="topbar">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <a class="brand h5 mb-0" href="/">VeriFact AI</a>
+        <div class="small-muted">— Admin Dashboard</div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <a href="/features" class="btn btn-outline-primary btn-sm">Features (URL Checker)</a>
+        <a href="/dashboard" class="btn btn-outline-secondary btn-sm">User Dashboard</a>
+        <a href="/contact" class="btn btn-outline-secondary btn-sm">Contact</a>
+        <a href="/about" class="btn btn-outline-secondary btn-sm">About</a>
+        <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="container-fluid p-4">
+    <div class="admin-header mb-3">
+      <div>
+        <h3 class="mb-0">Admin — News Monitor</h3>
+        <div class="small-muted">Compare your BERT model vs HuggingFace predictions, monitor credibility and user reports</div>
+      </div>
+
+      <div class="controls d-flex gap-2 align-items-center">
+        <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+        <button id="insertBtn" class="btn btn-outline-primary">Fetch & Insert (All sources)</button>
+        <input id="topicFilter" placeholder="Filter by topic (e.g. Politics)" class="form-control form-control-sm" style="width:220px">
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <!-- Left: summary KPIs -->
+      <div class="col-lg-3">
+        <div class="p-3 card-elev">
+          <h6 class="mb-1">Overview</h6>
+          <div class="small-muted mb-3">Quick metrics (approx)</div>
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between">
+              <div class="small-muted">Indexed articles</div>
+              <div id="kpiArticles" class="fw-bold">—</div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="small-muted">Avg HF Confidence</div>
+              <div id="kpiHF" class="fw-bold">—</div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="small-muted">Avg BERT Confidence</div>
+              <div id="kpiBERT" class="fw-bold">—</div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="small-muted">Pending Reports</div>
+              <div id="kpiReports" class="fw-bold">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 p-3 card-elev">
+          <h6 class="mb-1">Filter</h6>
+          <div class="small-muted mb-2">Show only articles with minimum HF confidence</div>
+          <input id="minHF" type="range" min="0" max="100" step="5" value="0">
+          <div class="d-flex justify-content-between small-muted"><span>0%</span><span>100%</span></div>
+        </div>
+      </div>
+
+      <!-- Right: article table -->
+      <div class="col-lg-9">
+        <div class="card-elev p-2">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="small-muted">
+                <tr>
+                  <th style="width:36%">Article</th>
+                  <th style="width:18%">Model Predictions</th>
+                  <th style="width:14%">Credibility</th>
+                  <th style="width:12%">Reports</th>
+                  <th style="width:20%">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="articlesTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details modal -->
+    <div class="modal fade" id="recheckModal" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content p-3">
+          <div class="modal-header">
+            <h5 class="modal-title">Live Re-check (HF + BERT)</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="recheckBody">
+            <!-- populated dynamically -->
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const api = (path, opts={}) => fetch(path, {
+  credentials: "include",
+  headers: {"Content-Type":"application/json"},
+  ...opts
+}).then(async r => ({ ok: r.ok, status: r.status, json: await r.json().catch(()=>({})) }));
+
+let articles = []; // will hold admin/news response
+
+async function loadAdminNews() {
+  const filter = document.getElementById('topicFilter').value.trim().toLowerCase();
+  const minHF = parseInt(document.getElementById('minHF').value)/100.0;
+
+  const res = await api('/admin/news');
+  if(!res.ok){
+    alert('Failed to load admin news');
+    return;
+  }
+  articles = res.json;
+
+  // apply front-end filters
+  let shown = articles.filter(a => (filter ? (a.topic||'').toLowerCase().includes(filter) : true))
+                      .filter(a => (a.confidence_hf !== undefined ? a.confidence_hf >= minHF : true));
+
+  renderKpis(shown);
+  renderArticles(shown);
+}
+
+function renderKpis(list) {
+  document.getElementById('kpiArticles').innerText = list.length;
+  const avgHF = list.reduce((s,a)=>s + (a.confidence_hf || 0),0) / (list.length || 1);
+  const avgB = list.reduce((s,a)=>s + (a.confidence_bert || 0),0) / (list.length || 1);
+  const totalReports = list.reduce((s,a)=>s + (a.reported_fake_count || 0),0);
+  document.getElementById('kpiHF').innerText = (avgHF*100).toFixed(1) + '%';
+  document.getElementById('kpiBERT').innerText = (avgB*100).toFixed(1) + '%';
+  document.getElementById('kpiReports').innerText = totalReports;
+}
+
+function renderArticles(list) {
+  const tbody = document.getElementById('articlesTbody');
+  tbody.innerHTML = '';
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center small-muted">No articles found</td></tr>`;
+    return;
+  }
+
+  list.forEach(a=>{
+    const hfLabel = a.prediction || a.prediction_hf || 'Unknown';
+    const hfConf = (a.confidence || a.confidence_hf || a.confidence_hf===0 ? (a.confidence || a.confidence_hf) : 0);
+    const bertLabel = a.bert_label || a.prediction_bert || 'Unknown';
+    const bertConf = (a.bert_confidence || a.confidence_bert || 0);
+
+    const cred = a.credibility_label || a.credibility_label || 'Unknown';
+    const credScore = a.credibility_score !== undefined ? a.credibility_score : (a.credibility_score || 0);
+
+    const factLink = (a.fact_check && (a.fact_check.link || a.fact_check.url)) ? (a.fact_check.link || a.fact_check.url) : null;
+    const source = a.source || 'Unknown';
+    const published = a.published_at ? new Date(a.published_at).toLocaleString() : '';
+
+    tbody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>
+          <div class="fw-semibold">${escapeHtml(a.title || 'Untitled')}</div>
+          <div class="small-muted">${escapeHtml(source)} • ${published}</div>
+          <div class="small-muted mt-1">${escapeHtml((a.summary || a.description || '').slice(0,220))}${(a.summary||a.description||'').length>220?'...':''}</div>
+          ${factLink?`<div class="mt-2"><a class="small-muted" href="${factLink}" target="_blank">Fact-check link</a></div>`:""}
+        </td>
+
+        <td>
+          <div><span class="mini-badge ${hfLabel==='Real'?'badge-real':'badge-fake'}">${hfLabel}</span>
+            <small class="small-muted ms-2">HF ${(hfConf*100).toFixed(1)}%</small></div>
+          <div class="mt-2"><span class="mini-badge ${bertLabel==='Real'?'badge-real':'badge-fake'}">${bertLabel}</span>
+            <small class="small-muted ms-2">BERT ${(bertConf*100).toFixed(1)}%</small></div>
+        </td>
+
+        <td>
+          <div class="cred-pill">${cred}</div>
+          <div class="small-muted mt-1">${(credScore*100).toFixed(1)}%</div>
+        </td>
+
+        <td>
+          <div>${a.reported_count || 0} reports</div>
+          <div class="small-muted">Fake reports: ${a.reported_fake_count || 0}</div>
+        </td>
+
+        <td>
+          <div class="d-flex gap-2">
+            <a class="btn btn-sm btn-outline-primary" target="_blank" href="${a.url}">Open</a>
+            <button class="btn btn-sm btn-outline-secondary" onclick="liveRecheck('${encodeURIComponent(a.url)}')">Live Re-check</button>
+            <button class="btn btn-sm btn-danger" onclick="markAs('${encodeURIComponent(a.url)}','Fake')">Report Fake</button>
+            <button class="btn btn-sm btn-success" onclick="markAs('${encodeURIComponent(a.url)}','Real')">Mark Real</button>
+          </div>
+        </td>
+      </tr>
+    `);
+  });
+}
+
+// escape helper
+function escapeHtml(s){ return (s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+// ---------------- Actions ----------------
+async function markAs(encodedUrl, label){
+  const url = decodeURIComponent(encodedUrl);
+  if(!confirm(`Submit a ${label} report for this article?`)) return;
+  const res = await api('/report', { method:'POST', body: JSON.stringify({ url, label }) });
+  if(!res.ok){
+    alert('Error: ' + (res.json.message || 'Failed'));
+    return;
+  }
+  alert('Saved.');
+  loadAdminNews();
+}
+
+// Live recheck (calls /check_url to run HF + BERT and show a modal)
+async function liveRecheck(encodedUrl){
+  const url = decodeURIComponent(encodedUrl);
+  const modalEl = new bootstrap.Modal(document.getElementById('recheckModal'));
+  const body = document.getElementById('recheckBody');
+  body.innerHTML = `<div class="text-center small-muted">Re-checking...</div>`;
+  modalEl.show();
+
+  const res = await api('/check_url', { method:'POST', body: JSON.stringify({ url }) });
+  if(!res.ok){
+    body.innerHTML = `<div class="alert alert-danger">Error: ${res.json.message || 'Failed to analyze URL'}</div>`;
+    return;
+  }
+
+  const d = res.json;
+  // admin response contains both HF and BERT
+  body.innerHTML = `
+    <div class="row">
+      <div class="col-md-8">
+        <h6>${escapeHtml(d.url)}</h6>
+        <p class="small-muted">Live model outputs</p>
+        <div><strong>HF:</strong> ${d.prediction_hf || d.prediction || 'Unknown'} (${((d.hf_confidence || d.confidence || 0)*100).toFixed(2)}%)</div>
+        <div><strong>BERT:</strong> ${d.prediction_bert || 'Unknown'} (${((d.bert_confidence || 0)*100).toFixed(2)}%)</div>
+        <div class="mt-2"><strong>Credibility:</strong> ${d.credibility_label || 'Unknown'} (${(d.credibility_score || 0)})</div>
+      </div>
+      <div class="col-md-4">
+        <div class="small-muted"><strong>Suggestion:</strong></div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-success" onclick="applyDecision('${encodeURIComponent(d.url)}','Real')">Apply 'Real' (update DB?)</button>
+          <button class="btn btn-sm btn-danger" onclick="applyDecision('${encodeURIComponent(d.url)}','Fake')">Apply 'Fake' (update DB?)</button>
+        </div>
+        <div class="small-muted mt-3">Note: Apply decision only updates by inserting a user report; it will not retrain models.</div>
+      </div>
+    </div>
+  `;
+}
+
+// applyDecision uses /report to insert an admin report (so DB counts update)
+async function applyDecision(encodedUrl, label){
+  const url = decodeURIComponent(encodedUrl);
+  const res = await api('/report', { method:'POST', body: JSON.stringify({ url, label, reason: 'Admin recheck' }) });
+  if(!res.ok){ alert('Failed: ' + (res.json.message||'')); return; }
+  alert('Admin decision saved.');
+  loadAdminNews();
+  bootstrap.Modal.getInstance(document.getElementById('recheckModal')).hide();
+}
+
+// ---------------- Insert & refresh ----------------
+document.getElementById('refreshBtn').addEventListener('click', loadAdminNews);
+document.getElementById('insertBtn').addEventListener('click', async ()=>{
+  if(!confirm('Fetch latest articles from all sources and insert into DB?')) return;
+  const res = await api('/insert-news');
+  if(!res.ok){ alert('Insert failed'); return; }
+  alert('Inserted: ' + (res.json.inserted || 0));
+  loadAdminNews();
+});
+document.getElementById('topicFilter').addEventListener('input', loadAdminNews);
+document.getElementById('minHF').addEventListener('input', loadAdminNews);
+
+// initial
+loadAdminNews();
+</script>
+</body>
+</html>

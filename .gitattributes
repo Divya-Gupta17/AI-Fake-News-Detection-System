@@ -1,0 +1,8 @@
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.pkl filter=lfs diff=lfs merge=lfs -text
+model_save/* filter=lfs diff=lfs merge=lfs -text
+model_save_/* filter=lfs diff=lfs merge=lfs -text
+data/WELFake.csv filter=lfs diff=lfs merge=lfs -text
+data/Fake.csv filter=lfs diff=lfs merge=lfs -text
+data/True.csv filter=lfs diff=lfs merge=lfs -text

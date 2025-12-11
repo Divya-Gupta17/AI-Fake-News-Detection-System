@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VeriFact AI — Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+  --primary:#0ea5e9;
+  --secondary:#0284c7;
+  --success:#10b981;
+  --danger:#ef4444;
+  --muted:#6b7280;
+  --bg:#f6fbff;
+  --card:#ffffff;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(180deg,#f8fdff,#e8f4ff);
+}
+
+.navbar {
+  border-bottom:1px solid rgba(0,0,0,0.05);
+  background:white;
+}
+
+.news-card{
+  background:var(--card);
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 4px 12px rgba(2,80,140,0.05);
+  transition:0.25s ease;
+}
+.news-card:hover{
+  transform: translateY(-4px);
+  box-shadow:0 8px 20px rgba(2,80,140,0.12);
+}
+
+.news-img {
+  height:170px;
+  width:100%;
+  object-fit:cover;
+  background:#dce8f7;
+}
+
+.badge-real {
+  background:rgba(16,185,129,0.15);
+  color:var(--success);
+  padding:5px 9px;
+  border-radius:50px;
+  font-size:0.8rem;
+  font-weight:600;
+}
+.badge-fake {
+  background:rgba(239,68,68,0.15);
+  color:var(--danger);
+  padding:5px 9px;
+  border-radius:50px;
+  font-size:0.8rem;
+  font-weight:600;
+}
+
+.sidebar-box {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.06);
+}
+
+.btn-azure {
+  background:var(--primary);
+  color:white;
+  border-radius:8px;
+  border:none;
+  padding:8px;
+  font-weight:600;
+}
+.btn-azure:hover {
+  background:var(--secondary);
+}
+
+.report-btn {
+  color:#ef4444;
+  font-size:0.85rem;
+  cursor:pointer;
+  text-decoration:underline;
+}
+</style>
+</head>
+
+<body>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg py-3">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold text-primary" href="/">VeriFact AI</a>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="fw-semibold">Hi, <span id="usernameDisplay">{{ username }}</span></span>
+      <a href="{{ url_for('profile_page') }}" class="btn btn-outline-primary btn-sm">Profile</a>
+
+      <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+
+    <!-- SIDEBAR -->
+    <aside class="col-lg-3 sidebar-box">
+      <h5 class="fw-bold mb-2">Personalize Your Feed</h5>
+      <p class="text-muted small">Choose topics & sources you want to see.</p>
+
+      <label class="fw-semibold mt-3">Topics</label>
+      <div id="topicsCheckboxes" class="d-flex flex-column gap-2"></div>
+
+      <label class="fw-semibold mt-3">Sources</label>
+      <div id="sourcesCheckboxes" class="d-flex flex-column gap-2"></div>
+
+      <label class="fw-semibold mt-3">View Type</label>
+      <select id="viewTypeSelect" class="form-select form-select-sm">
+        <option value="all">All news</option>
+        <option value="verified">Verified only</option>
+      </select>
+
+      <button id="savePreferencesBtn" class="btn-azure w-100 mt-3">Save & Refresh</button>
+      <p id="prefSaveMsg" class="text-success small mt-2"></p>
+
+      <hr>
+      <button id="refreshFeedBtn" class="btn btn-outline-primary btn-sm w-100">Refresh Feed</button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="col-lg-9 px-4">
+      <h3 class="fw-bold">Your News Feed</h3>
+      <p class="text-muted">Based on your preferences</p>
+
+      <span id="newsStatus" class="text-muted small">Loading...</span>
+
+      <div class="row g-4 mt-3" id="newsFeedContainer"></div>
+
+      <!-- No results -->
+      <div id="noResultsBox" class="text-center d-none mt-5">
+        <h5>No articles match your filters</h5>
+        <p class="text-muted">Try showing all news</p>
+        <button class="btn btn-outline-primary" id="btnShowAll">Show All</button>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<script>
+// ---------------- PREF OPTIONS ------------------
+const availableTopics = [
+  "Technology","Science","Politics","Economics","Health","Environment",
+  "Sports","Business","Entertainment","World","Local","Crime"
+];
+const availableSources = [
+  "BBC News","CNN","Reuters","The Guardian","The New York Times",
+  "Al Jazeera","Bloomberg","TechCrunch","ESPN","Science Daily"
+];
+
+function api(path, opts={}) {
+  return fetch(path, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    ...opts
+  }).then(async res => ({ok: res.ok, json: await res.json().catch(()=>({}))}));
+}
+
+// ---------------- RENDER CHECKBOXES ----------------
+function renderPreferencesUI(prefs) {
+  const tbox = document.getElementById("topicsCheckboxes");
+  const sbox = document.getElementById("sourcesCheckboxes");
+
+  tbox.innerHTML = "";
+  availableTopics.forEach(t => {
+    tbox.insertAdjacentHTML("beforeend", `
+      <label><input type="checkbox" value="${t}" ${prefs.topics.includes(t)?"checked":""}> ${t}</label>
+    `);
+  });
+
+  sbox.innerHTML = "";
+  availableSources.forEach(s => {
+    sbox.insertAdjacentHTML("beforeend", `
+      <label><input type="checkbox" value="${s}" ${prefs.sources.includes(s)?"checked":""}> ${s}</label>
+    `);
+  });
+
+  document.getElementById("viewTypeSelect").value = prefs.type || "all";
+}
+
+// ---------------- LOAD PREFS ----------------
+async function loadPreferences() {
+  const res = await api("/user/preferences");
+  if(res.ok) renderPreferencesUI(res.json);
+}
+
+// ---------------- SAVE PREFS ----------------
+document.getElementById("savePreferencesBtn").onclick = async ()=>{
+  const topics = [...document.querySelectorAll("#topicsCheckboxes input:checked")].map(i=>i.value);
+  const sources = [...document.querySelectorAll("#sourcesCheckboxes input:checked")].map(i=>i.value);
+  const type = document.getElementById("viewTypeSelect").value;
+
+  await api("/user/preferences", {
+    method:"PUT",
+    body: JSON.stringify({topics,sources,type})
+  });
+
+  document.getElementById("prefSaveMsg").innerText = "Preferences saved!";
+  fetchNews();
+};
+
+// ---------------- FETCH NEWS ----------------
+async function fetchNews() {
+  document.getElementById("newsStatus").innerText = "Loading...";
+
+  // FORCE refresh by adding timestamp
+  const res = await api("/news?ts=" + Date.now());
+
+
+  if(!res.ok){
+    document.getElementById("newsStatus").innerText = "Failed loading news";
+    return;
+  }
+
+  const articles = res.json;
+  renderNews(articles);
+}
+
+// ---------------- RENDER NEWS CARDS ----------------
+function renderNews(list){
+  const container = document.getElementById("newsFeedContainer");
+  container.innerHTML = "";
+
+  if(!list.length){
+    document.getElementById("noResultsBox").classList.remove("d-none");
+    return;
+  }
+
+  list.forEach(a=>{
+    const img = a.image_url || "/static/images/default-news.jpg";
+
+    container.insertAdjacentHTML("beforeend", `
+      <div class="col-md-6 col-lg-4">
+        <div class="news-card">
+          <img src="${img}" class="news-img">
+
+          <div class="p-3">
+            <small class="text-muted d-flex justify-content-between">
+              <span>${a.source}</span>
+              <span>${a.published_at || ""}</span>
+            </small>
+
+            <h6 class="fw-bold mt-2">${a.title}</h6>
+            <p class="text-muted small">${a.summary || a.description}</p>
+
+            <span class="${a.prediction==='Real'?'badge-real':'badge-fake'}">
+              ${a.prediction} • ${(a.confidence*100).toFixed(1)}%
+            </span>
+
+            <a href="${a.url}" target="_blank" class="btn btn-sm btn-outline-primary float-end">Read</a>
+
+            <div class="mt-2 report-btn" onclick="reportFake('${a.url}')">Report Fake</div>
+          </div>
+        </div>
+      </div>
+    `);
+  });
+
+  document.getElementById("newsStatus").innerText = "";
+}
+
+// ---------------- REPORT ----------------
+function reportFake(url){
+  if(!confirm("Report this article as fake?")) return;
+
+  api("/news/report-fake",{
+    method:"POST",
+    body: JSON.stringify({url})
+  }).then(()=>alert("Reported!"));
+}
+
+// Initial load
+(async ()=>{
+  await loadPreferences();
+  await fetchNews();
+})();
+
+document.getElementById("refreshFeedBtn").onclick = fetchNews;
+document.getElementById("btnShowAll").onclick = ()=>{
+  document.getElementById("viewTypeSelect").value="all";
+  fetchNews();
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriFact AI - About Us</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+
+    <style>
+        /* Shared variables and base styles (can be moved to an external style.css if desired) */
+        :root {
+            --primary-light-bg: #F0F2F5; /* Light grey for body background */
+            --secondary-light-bg: #FFFFFF; /* White for cards */
+            --accent-purple: #7C3AED;
+            --accent-light-purple: #C084FC;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-light: #E0E0E0;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --title-gradient: linear-gradient(90deg, #7C3AED, #C084FC); /* Purple gradient for titles */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary-light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 3.2em; /* Larger title */
+            margin-bottom: 30px;
+            text-align: center;
+            background: var(--title-gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -1px; /* Tighter letter spacing */
+            position: relative;
+            animation: fadeInScale 1s ease-out;
+        }
+
+        .section-subtitle {
+            font-size: 1.3em;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 60px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        /* Hero section specific styles */
+        .hero-section {
+            background: linear-gradient(45deg, #e3f2fd, #e8eaf6); /* Very light blue/purple gradient */
+            padding: 80px 0;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .hero-section h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 4.5em; /* Larger hero title */
+            margin-bottom: 20px;
+            background: var(--title-gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -2px;
+            animation: heroTextReveal 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .hero-section p {
+            font-size: 1.5em;
+            color: var(--text-light);
+            max-width: 900px;
+            margin: 0 auto 40px auto;
+            animation: heroTextReveal 1.2s ease-out 0.2s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .hero-image-container {
+            position: relative;
+            padding: 20px; /* Space for subtle shadow/glow */
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            animation: heroImagePop 1.5s ease-out 0.4s forwards;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.8); /* Inner light glow */
+        }
+
+        /* Card styles */
+        .feature-card {
+            background-color: var(--secondary-light-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 25px var(--shadow-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Ensure cards in a row have equal height */
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+        .card-icon {
+            font-size: 3.5em; /* Larger icons */
+            color: var(--accent-purple);
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+        .feature-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8em;
+            color: var(--accent-purple);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .feature-card p {
+            font-size: 1.05em;
+            color: var(--text-light);
+            flex-grow: 1; /* Allows paragraphs to take up available space */
+        }
+
+        /* Team section styles */
+        .team-card {
+            background-color: var(--secondary-light-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px var(--shadow-light);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+        .team-member-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px auto;
+            border: 4px solid var(--accent-light-purple);
+            box-shadow: 0 0 15px rgba(192, 132, 252, 0.4);
+            transition: transform 0.3s ease;
+        }
+        .team-member-img:hover {
+            transform: scale(1.05);
+        }
+        .team-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6em;
+            color: var(--accent-purple);
+            margin-bottom: 8px;
+        }
+        .team-card p { /* Styled for names only now */
+            color: var(--text-light);
+            font-size: 1.1em; /* Slightly larger for names */
+            font-weight: 600; /* Bolder for names */
+            margin-bottom: 0; /* No extra margin if only name */
+        }
+        .team-card .social-icons {
+            margin-top: 15px; /* Add some space above social icons */
+        }
+        .team-card .social-icons a {
+            color: var(--accent-purple);
+            font-size: 1.5em;
+            margin: 0 8px;
+            transition: color 0.3s ease;
+        }
+        .team-card .social-icons a:hover {
+            color: var(--accent-light-purple);
+        }
+
+        /* Contact/Footer section (simple) */
+        .contact-footer {
+            background-color: #343a40; /* Darker footer */
+            color: rgba(255, 255, 255, 0.8);
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 60px;
+        }
+        .contact-footer a {
+            color: #C084FC;
+            text-decoration: none;
+        }
+        .contact-footer a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes heroTextReveal {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes heroImagePop {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animated-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInScale 0.8s ease-out forwards;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 991.98px) {
+            /* Navbar always expanded for larger screens, but can collapse on small if needed */
+            .navbar-expand-lg .navbar-collapse {
+                display: flex !important; /* Forces navbar to always be inline */
+                flex-basis: auto;
+            }
+            .navbar-toggler {
+                display: none; /* Hide toggler button */
+            }
+            .navbar-nav .nav-item {
+                margin-right: 15px; /* Add space between nav items */
+            }
+            .navbar-nav {
+                width: 100%; /* Ensure nav items span full width if desired */
+                justify-content: flex-end; /* Align nav items to the right */
+            }
+        }
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 3em;
+            }
+            .hero-section p {
+                font-size: 1.2em;
+            }
+            .section-title {
+                font-size: 2.5em;
+            }
+            .section-subtitle {
+                font-size: 1em;
+            }
+            .feature-card h3, .team-card h3 {
+                font-size: 1.5em;
+            }
+        }
+        @media (max-width: 576px) {
+            .hero-section h1 {
+                font-size: 2.5em;
+            }
+            .hero-section p {
+                font-size: 1em;
+            }
+            .section-title {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('home_page') }}" style="background: var(--title-gradient); -webkit-background-clip: text; color: transparent;">VeriFact AI</a>
+            <!-- Removed navbar-toggler and collapse div to keep it always expanded -->
+            <div class="navbar-collapse d-flex justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home_page') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard_page') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('about_page') }}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('features_page') }}">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-primary ms-2" href="{{ url_for('login_page') }}">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="mb-3">About VeriFact AI</h1>
+            <p class="lead">
+                Empowering trust in the digital age through advanced AI-driven fact-checking and misinformation detection.
+            </p>
+            <div class="hero-image-container">
+                <!-- Placeholder for a hero image related to AI, fact-checking, or a secure digital environment -->
+                <img src="https://via.placeholder.com/800x450/e0e7ff/6d28d9?text=VeriFact+AI+Overview" class="img-fluid hero-image" alt="VeriFact AI Overview">
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Mission Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Our Mission</h2>
+            <p class="section-subtitle">
+                At VeriFact AI, we are committed to combating the spread of misinformation and restoring confidence in online information. We leverage cutting-edge artificial intelligence to provide timely and accurate fact-checking.
+            </p>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4 d-flex">
+                    <div class="feature-card animated-card" style="animation-delay: 0.2s;">
+                        <span class="card-icon">💡</span>
+                        <h3>Innovation</h3>
+                        <p>We constantly explore new AI and machine learning techniques to stay ahead of evolving misinformation tactics.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 d-flex">
+                    <div class="feature-card animated-card" style="animation-delay: 0.4s;">
+                        <span class="card-icon">✅</span>
+                        <h3>Accuracy</h3>
+                        <p>Our core principle is to deliver highly accurate and unbiased assessments of information veracity.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 d-flex">
+                    <div class="feature-card animated-card" style="animation-delay: 0.6s;">
+                        <span class="card-icon">🌍</span>
+                        <h3>Impact</h3>
+                        <p>We aim to create a positive global impact by fostering a more informed and discerning online community.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <h2 class="section-title">How VeriFact AI Works</h2>
+            <p class="section-subtitle">
+                Our sophisticated AI model processes vast amounts of data, analyzes various linguistic and contextual cues, and cross-references information against trusted sources to determine the truthfulness of content.
+            </p>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3 d-flex">
+                    <div class="feature-card animated-card" style="animation-delay: 0.8s;">
+                        <span class="card-icon">📚</span>
+                        <h3>Data Ingestion</h3>
+                        <p>Our system continuously ingests data from diverse sources including news articles, social media, and academic papers.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex">
+                    <div class="feature-card animated-card" style="animation-delay: 1.0s;">
+                        <span class="card-icon">🧠</span>
+                        <h3>AI Analysis</h3>
+                        <p>Advanced natural language processing (NLP) and deep learning algorithms analyze content for patterns of misinformation.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex">
+                    <div class="feature-card animated-card" style="animation-delay: 1.2s;">
+                        <span class="card-icon">🔍</span>
+                        <h3>Fact Cross-Referencing</h3>
+                        <p>Information is validated against a massive database of verified facts and reputable sources.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex">
+                    <div class="feature-card animated-card" style="animation-delay: 1.4s;">
+                        <span class="card-icon">📊</span>
+                        <h3>Veracity Scoring</h3>
+                        <p>Content is assigned a veracity score or label, indicating its likelihood of being true or false.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meet Our Team Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Meet Our Team</h2>
+            <p class="section-subtitle">
+                Behind VeriFact AI is a dedicated team of AI researchers, data scientists, and ethical technology advocates passionate about creating a more truthful internet.
+            </p>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-6 col-lg-4 d-flex">
+                    <div class="team-card animated-card" style="animation-delay: 1.6s;">
+                        <img src="https://via.placeholder.com/150/C084FC/FFFFFF?text=Divya" alt="Divya Gupta" class="team-member-img">
+                        <p>Divya Gupta</p>
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 d-flex">
+                    <div class="team-card animated-card" style="animation-delay: 1.8s;">
+                        <img src="https://via.placeholder.com/150/7C3AED/FFFFFF?text=Divyanshi" alt="Divyanshi Namdev" class="team-member-img">
+                        <p>Divyanshi Namdev</p>
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-github"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-6 col-lg-4 d-flex">
+                    <div class="team-card animated-card" style="animation-delay: 2.0s;">
+                        <img src="https://via.placeholder.com/150/a78bfa/FFFFFF?text=Dhruv" alt="Dhruv Rai" class="team-member-img">
+                        <p>Dhruv Rai</p>
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simple Call to Action / Footer -->
+    <footer class="contact-footer">
+        <div class="container">
+            <p>&copy; 2025 VeriFact AI. All rights reserved.</p>
+            <p>Contact us: <a href="mailto:info@verifactai.com">info@verifactai.com</a></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome for icons (if you want more than emojis) -->
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit-id.js" crossorigin="anonymous"></script>
+    <!-- Replace 'your-font-awesome-kit-id.js' with your actual kit ID or remove if not using Font Awesome -->
+
+    <script>
+        // Optional: Intersection Observer for fade-in animations as elements scroll into view
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in-visible'); // Add a class when visible
+                        observer.unobserve(entry.target); // Stop observing once animated
+                    }
+                });
+            }, {
+                threshold: 0.1, // Trigger when 10% of the item is visible
+                rootMargin: "0px 0px -50px 0px" // Start animation slightly before it's fully in view
+            });
+
+            document.querySelectorAll('.animated-card, .section-title, .section-subtitle').forEach(element => {
+                element.classList.add('animated-hidden'); // Hide initially
+                observer.observe(element);
+            });
+
+            // Add styles for the visible state
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .animated-hidden { opacity: 0; transform: translateY(20px); }
+                .fade-in-visible {
+                    opacity: 1;
+                    transform: translateY(0);
+                    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

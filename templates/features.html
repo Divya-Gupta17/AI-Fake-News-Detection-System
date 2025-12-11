@@ -1,0 +1,716 @@
+<!-- <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Fake News Detection — Features</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f1724; 
+      --card:#0b1220;
+      --muted:#98a0b3;
+      --accent:#6ee7b7;
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --radius:16px;
+      --max:1100px;
+      color-scheme: dark;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui;color:#e6eef6;background:linear-gradient(180deg,var(--bg),#071025);}
+    .container{max-width:var(--max);margin:48px auto;padding:24px}
+
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:grid;place-items:center;font-weight:700;color:#042033}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    nav a.primary{background:linear-gradient(90deg,#10b981,#3b82f6);padding:10px 14px;border-radius:10px;color:#03121a}
+
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;margin-bottom:32px}
+    .hero-card{background:linear-gradient(180deg,var(--glass),var(--glass-2));padding:28px;border-radius:20px;backdrop-filter:blur(6px);box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .feature{background:linear-gradient(180deg,var(--card),#061124);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    .f-icon{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#c7f9e3,#7dd3fc);display:grid;place-items:center;color:#042033;font-weight:800}
+
+    .demo{background:linear-gradient(180deg,#071428,#04101a);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
+    .input{background:#02101a;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);color:var(--muted);width:100%}
+    .btn{padding:10px 12px;margin-top:10px;border-radius:10px;background:var(--accent);border:0;font-weight:700;cursor:pointer;color:#03121a;width:100%}
+    .result-box{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.05)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">FN</div>
+        <div>
+          <h1>AI FakeNews — Aggregator & Detector</h1>
+        </div>
+      </div>
+      <nav>
+        {% if session.get('user_id') %}
+          <a href="/">Home</a>
+          <a href="/dashboard">Dashboard</a>
+          <a href="/profile">Profile</a>
+          <a href="/contact">Contact</a>
+          <a href="/about">About</a>
+          <a href="/logout" class="primary">Logout</a>
+        {% else %}
+          <a href="/">Home</a>
+          <a href="#features">Features</a>
+          <a href="/contact">Contact</a>
+          <a href="/about">About</a>
+          <a href="/login" class="primary">Login</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-card">
+        <h2>Project Features</h2>
+        <p>AI-powered aggregation, detection and URL-level fake news analysis.</p>
+
+        <div class="features" id="features">
+          <div class="feature"><div style="display:flex;gap:12px"><div class="f-icon">AI</div><div><h3>Transformer-based Model</h3><p>Fine-tuned BERT/T5 model giving high Fake/Real accuracy.</p></div></div></div>
+
+          <div class="feature"><div style="display:flex;gap:12px"><div class="f-icon">🔗</div><div><h3>Source Credibility</h3><p>Ranks news reliability using source history and trust factors.</p></div></div></div>
+
+          <div class="feature"><div style="display:flex;gap:12px"><div class="f-icon">🌐</div><div><h3>URL Fake/Real Checker</h3><p>Paste any news link — article text is extracted and analyzed instantly.</p></div></div></div>
+
+          <div class="feature"><div style="display:flex;gap:12px"><div class="f-icon">🛡️</div><div><h3>Explainability</h3><p>Highlights influential phrases and bias signals.</p></div></div></div>
+
+          <div class="feature"><div style="display:flex;gap:12px"><div class="f-icon">⚡</div><div><h3>Fast & Lightweight</h3><p>Optimized for real-time inference and low latency.</p></div></div></div>
+        </div>
+      </div>
+
+      <aside class="demo" id="demo">
+        <h3>URL Fake News Checker</h3>
+        <input id="urlInput" class="input" placeholder="Paste a news URL here...">
+        <button class="btn" onclick="checkURL()">Check URL</button>
+        <div id="result" class="result-box" style="display:none"></div>
+      </aside>
+    </section>
+
+    <footer style="margin-top:28px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px">
+      <div>
+        <a href="/" style="color:var(--muted);text-decoration:none;margin-right:12px">Home</a>
+        <a href="/dashboard" style="color:var(--muted);text-decoration:none;margin-right:12px">Dashboard</a>
+        <a href="/contact" style="color:var(--muted);text-decoration:none;margin-right:12px">Contact</a>
+        <a href="/about" style="color:var(--muted);text-decoration:none">About</a>
+      </div>
+      <div>Made with ❤️ • AI FakeNews</div>
+    </footer>
+  </div>
+
+<script>
+async function checkURL() {
+  const url = document.getElementById("urlInput").value.trim();
+  const resultBox = document.getElementById("result");
+
+  if (!url) {
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `<strong>Please enter a URL.</strong>`;
+    return;
+  }
+
+  resultBox.style.display = "block";
+  resultBox.innerHTML = "Checking...";
+
+  const res = await fetch("/check_url", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url })
+  });
+
+  const data = await res.json();
+
+  // ❌ Backend sends {message: "..."} when error
+  if (!res.ok || data.message && !data.prediction) {
+    resultBox.innerHTML = `<strong>Error:</strong> ${data.message || "Unable to classify"}`;
+    return;
+  }
+
+  // detect admin response
+  const isAdmin = data.prediction_hf !== undefined;
+
+  if (isAdmin) {
+    // Admin sees BERT + HF + Credibility
+    resultBox.innerHTML = `
+      <strong>HF Prediction:</strong> ${data.prediction_hf}  
+          (${(data.hf_confidence * 100).toFixed(2)}%)<br>
+
+      <strong>BERT Prediction:</strong> ${data.prediction_bert}  
+          (${(data.bert_confidence * 100).toFixed(2)}%)<br><br>
+
+      <strong>Credibility Score:</strong> ${data.credibility_score}<br>
+      <strong>Credibility Label:</strong> ${data.credibility_label}
+    `;
+  } else {
+    // Normal user sees HF + Credibility
+    resultBox.innerHTML = `
+      <strong>Prediction:</strong> ${data.prediction}<br>
+      <strong>Confidence:</strong> ${(data.confidence * 100).toFixed(2)}%<br><br>
+
+      <strong>Credibility Score:</strong> ${data.credibility_score}<br>
+      <strong>Credibility Label:</strong> ${data.credibility_label}
+    `;
+  }
+}
+</script>
+
+</body>
+</html> -->
+
+
+
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Fake News Detection — Features</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* 🌸 MODERN WARM–PASTEL PALETTE */
+      --bg:#0f1a2a;                 /* Deep Navy Charcoal */
+      --bg-soft:#162235;
+
+      --card: rgba(22, 34, 53, 0.95);
+      --card-soft: rgba(25, 40, 65, 0.92);
+
+      --heading:#FFF7F1;            /* Cream white */
+      --muted:#ffddd6;              /* Soft rose-beige */
+
+      --accent:#FFCFB3;             /* Peach */
+      --accent-soft:#FFE9DD;        /* Light peach */
+      --accent-2:#FF7A70;           /* Coral */
+
+      --success:#6cd69a;
+      --danger:#ff6b6b;
+
+      --radius-lg:20px;
+      --radius-md:14px;
+      --radius-sm:10px;
+
+      --shadow-soft:0 20px 40px rgba(0,0,0,0.45);
+      --max:1120px;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--heading);
+      background:
+        radial-gradient(circle at top left, rgba(255,207,179,0.25), transparent 55%),
+        radial-gradient(circle at top right, rgba(255,154,150,0.25), transparent 55%),
+        linear-gradient(180deg, var(--bg), #0c1422);
+    }
+
+    .noise-overlay{
+      pointer-events:none;
+      position:fixed;
+      inset:0;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+      z-index:-1;
+    }
+
+    .container{
+      max-width:var(--max);
+      margin:40px auto 32px;
+      padding:0 20px;
+    }
+
+    /* HEADER */
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:26px;
+    }
+
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+
+    .logo{
+      width:54px;
+      height:54px;
+      border-radius:16px;
+      background:radial-gradient(circle at 0% 0%, #FFE9DD 0, #FFCFB3 40%, #FF7A70 100%);
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      letter-spacing:0.04em;
+      color:#431515;
+      box-shadow:0 10px 24px rgba(255,153,140,0.45);
+    }
+
+    .brand-text h1{
+      margin:0;
+      font-size:1.3rem;
+      font-weight:700;
+      color:var(--heading);
+    }
+
+    .brand-text span{
+      font-size:0.78rem;
+      color:var(--muted);
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+    }
+
+    /* NAV */
+
+    nav{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+    }
+
+    nav a{
+      color:var(--muted);
+      text-decoration:none;
+      font-weight:500;
+      font-size:0.9rem;
+      position:relative;
+      padding:6px 2px;
+    }
+
+    nav a:hover{
+      color:var(--heading);
+    }
+
+    nav a.primary{
+      background:linear-gradient(120deg,#FFE9DD,#FFCFB3,#FF7A70);
+      padding:8px 15px;
+      border-radius:20px;
+      color:#3a1b13!important;
+      font-weight:600;
+      margin-left:6px;
+      box-shadow:0 12px 24px rgba(255,122,112,0.5);
+    }
+
+    /* LAYOUT */
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.4fr 1.1fr;
+      gap:22px;
+    }
+
+    /* DEMO */
+
+    .demo{
+      background:linear-gradient(160deg, rgba(255,207,179,0.18), rgba(22,34,53,0.95));
+      padding:20px;
+      border-radius:var(--radius-lg);
+      border:1px solid rgba(255,207,179,0.2);
+      box-shadow:var(--shadow-soft);
+      position:relative;
+    }
+
+    .demo h3{
+      margin:0 0 6px;
+      font-size:1.05rem;
+    }
+
+    .demo-caption{
+      margin:0 0 10px;
+      font-size:0.8rem;
+      color:var(--muted);
+    }
+
+    .input{
+      background:rgba(20,30,48,0.9);
+      padding:10px;
+      border-radius:var(--radius-sm);
+      border:1px solid rgba(255,207,179,0.4);
+      color:var(--heading);
+      width:100%;
+      font-size:0.86rem;
+      outline:none;
+    }
+
+    .input::placeholder{
+      color:#f9c9be;
+    }
+
+    .btn{
+      margin-top:10px;
+      padding:10px;
+      width:100%;
+      border:0;
+      border-radius:var(--radius-sm);
+      cursor:pointer;
+      background:radial-gradient(circle at 0 0,#fff4ef,#FFCFB3 40%,#FF7A70 100%);
+      font-weight:700;
+      color:#3a1b13;
+      box-shadow:0 10px 24px rgba(255,120,110,0.55);
+    }
+
+    .btn:disabled{
+      opacity:0.7;
+      cursor:default;
+      box-shadow:none;
+    }
+
+    .result-box{
+      background:rgba(20,30,48,0.8);
+      border:1px dashed rgba(255,204,183,0.4);
+      padding:11px;
+      border-radius:var(--radius-sm);
+      margin-top:11px;
+      display:none;
+      font-size:0.8rem;
+      color:var(--muted);
+      white-space:pre-line;
+    }
+
+    .result-label{
+      font-weight:600;
+      color:var(--heading);
+    }
+
+    .result-prediction.real{
+      color:var(--success);
+      font-weight:600;
+    }
+
+    .result-prediction.fake{
+      color:var(--danger);
+      font-weight:600;
+    }
+
+    /* FEATURES CARD */
+
+    .hero-card{
+      background:linear-gradient(135deg, rgba(22,34,53,0.95), rgba(25,40,65,0.9));
+      padding:22px;
+      border-radius:var(--radius-lg);
+      border:1px solid rgba(255,207,179,0.18);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .hero-card h2{
+      margin:0 0 4px;
+      font-size:1.4rem;
+    }
+
+    .hero-card p{
+      margin:0 0 12px;
+      font-size:0.9rem;
+      color:var(--muted);
+    }
+
+    .features{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .feature{
+      background:rgba(25,40,65,0.85);
+      padding:12px;
+      border-radius:var(--radius-md);
+      border:1px solid rgba(255,207,179,0.22);
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      transition:.18s;
+    }
+
+    .feature:hover{
+      background:rgba(30,50,80,0.92);
+      border-color:#FFCFB3;
+      transform:translateY(-3px);
+    }
+
+    .f-icon{
+      min-width:42px;
+      height:42px;
+      border-radius:14px;
+      background:radial-gradient(circle at 30% 0,#fff3ef,#FFCFB3 50%,#FF7A70 100%);
+      display:grid;
+      place-items:center;
+      color:#3a1b13;
+      font-weight:800;
+      box-shadow:0 10px 20px rgba(255,122,112,0.35);
+    }
+
+    .feature h3{
+      margin:0 0 4px;
+      font-size:0.95rem;
+    }
+
+    .feature p{
+      margin:0;
+      font-size:0.8rem;
+      color:var(--muted);
+    }
+
+    /* FOOTER */
+
+    footer{
+      margin-top:30px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color:var(--muted);
+      border-top:1px solid rgba(255,207,179,0.2);
+      padding-top:12px;
+      font-size:0.78rem;
+    }
+
+    footer a{
+      color:var(--muted);
+      text-decoration:none;
+      margin-right:12px;
+      font-size:0.78rem;
+    }
+
+    footer a:hover{
+      color:var(--heading);
+    }
+
+    @media (max-width:900px){
+      .hero{
+        grid-template-columns:1fr;
+        gap:18px;
+      }
+      .demo{
+        order:-1;
+      }
+    }
+
+    @media (max-width:640px){
+      header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+      }
+
+      .container{
+        padding:0 16px 24px;
+      }
+
+      .features{
+        grid-template-columns:1fr;
+      }
+
+      footer{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="noise-overlay"></div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="logo">FN</div>
+      <div class="brand-text">
+        <h1> VERIFACT AI</h1>
+        <span>VERIFY • TRUST • STAY INFORMED</span>
+      </div>
+    </div>
+
+    <nav>
+      {% if session.get('user_id') %}
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/profile">Profile</a>
+    
+        <a href="/about">About</a>
+        <a href="/logout" class="primary">Logout</a>
+      {% else %}
+        <a href="/">Home</a>
+        <a href="#features">Features</a>
+        <a href="/about">About</a>
+        <a href="/login" class="primary">Login</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <!-- MAIN HERO -->
+  <section class="hero">
+
+    <!-- URL CHECKER -->
+    <aside class="demo" id="demo">
+      <h3>Check News URL</h3>
+      <p class="demo-caption">Paste a news link and let the AI check if it's likely Real or Fake.</p>
+      <input id="urlInput" class="input" placeholder="Paste any news link here...">
+      <button class="btn" id="checkBtn" onclick="checkURL()">🔍 Check News</button>
+      <div id="result" class="result-box"></div>
+    </aside>
+
+    <!-- FEATURES -->
+    <div class="hero-card">
+      <h2>Project Features</h2>
+      <p>URL-based fake news detection, BERT classifier, and a dashboard with credibility scores based on your interests.</p>
+
+      <div class="features" id="features">
+
+        <div class="feature">
+          <div class="f-icon">🌐</div>
+          <div>
+            <h3>URL Fake News Checker</h3>
+            <p>Paste a link; we fetch the article text and run it through the model to classify it.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="f-icon">AI</div>
+          <div>
+            <h3>BERT Fake News Detection</h3>
+            <p>Fine-tuned BERT model predicts whether a news article is Fake or Real with confidence.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="f-icon">📊</div>
+          <div>
+            <h3>Interest-based Dashboard</h3>
+            <p>Dashboard shows news based on user-selected topics like politics, tech, sports, etc.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="f-icon">🛡️</div>
+          <div>
+            <h3>Credibility Score</h3>
+            <p>Each article shows a credibility score and label (High / Medium / Low) based on the source.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/contact">Contact</a>
+      <a href="/about">About</a>
+    </div>
+    <span>Made by Verifact AI team  </span>
+  </footer>
+
+</div>
+
+<script>
+async function checkURL() {
+  const urlInput = document.getElementById("urlInput");
+  const resultBox = document.getElementById("result");
+  const checkBtn = document.getElementById("checkBtn");
+
+  const url = urlInput.value.trim();
+  if (!url) {
+    resultBox.style.display = "block";
+    resultBox.innerHTML = "<span class='result-label'>Please enter a URL.</span>";
+    return;
+  }
+
+  resultBox.style.display = "block";
+  resultBox.innerHTML = "Checking…";
+  checkBtn.disabled = true;
+
+  try {
+    const res = await fetch("/check_url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
+
+    let data;
+    try {
+      data = await res.json();
+    } catch (e) {
+      resultBox.innerHTML = "<span class='result-label'>Error:</span> Unable to parse server response.";
+      return;
+    }
+
+    // backend may send {message: "..."} on error
+    if (!res.ok || (data.message && !data.prediction && !data.prediction_hf)) {
+      resultBox.innerHTML = `<span class="result-label">Error:</span> ${data.message || "Unable to classify."}`;
+      return;
+    }
+
+    const isAdmin = data.prediction_hf !== undefined;
+
+    if (isAdmin) {
+      const hfLabel = (data.prediction_hf || "").toString().toUpperCase();
+      const bertLabel = (data.prediction_bert || "").toString().toUpperCase();
+      const hfClass = hfLabel === "REAL" ? "real" : "fake";
+      const bertClass = bertLabel === "REAL" ? "real" : "fake";
+
+      resultBox.innerHTML = `
+        <div><span class="result-label">HF Prediction:</span>
+          <span class="result-prediction ${hfClass}"> ${data.prediction_hf}</span>
+          <span> (${(data.hf_confidence * 100).toFixed(2)}%)</span>
+        </div>
+        <div><span class="result-label">BERT Prediction:</span>
+          <span class="result-prediction ${bertClass}"> ${data.prediction_bert}</span>
+          <span> (${(data.bert_confidence * 100).toFixed(2)}%)</span>
+        </div>
+        <br>
+        <div><span class="result-label">Credibility Score:</span> ${data.credibility_score}</div>
+        <div><span class="result-label">Credibility Label:</span> ${data.credibility_label}</div>
+      `;
+    } else {
+      const label = (data.prediction || "").toString().toUpperCase();
+      const cls = label === "REAL" ? "real" : "fake";
+
+      resultBox.innerHTML = `
+        <div><span class="result-label">Prediction:</span>
+          <span class="result-prediction ${cls}"> ${data.prediction}</span>
+        </div>
+        <div><span class="result-label">Confidence:</span> ${(data.confidence * 100).toFixed(2)}%</div>
+        <br>
+        <div><span class="result-label">Credibility Score:</span> ${data.credibility_score}</div>
+        <div><span class="result-label">Credibility Label:</span> ${data.credibility_label}</div>
+      `;
+    }
+  } catch (err) {
+    console.error(err);
+    resultBox.innerHTML = "<span class='result-label'>Error:</span> Network issue or server not reachable.";
+  } finally {
+    checkBtn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>

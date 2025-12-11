@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VeriFact AI — Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+  --primary:#0ea5e9;
+  --secondary:#0284c7;
+  --success:#10b981;
+  --danger:#ef4444;
+  --muted:#6b7280;
+  --bg:#f6fbff;
+  --card:#ffffff;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: radial-gradient(circle at top left,#e0f2fe 0,#f9fafb 45%,#e5f3ff 100%);
+}
+
+.navbar {
+  border-bottom:1px solid rgba(0,0,0,0.05);
+  background:white;
+}
+
+/* SIDEBAR */
+.sidebar-box {
+  background: linear-gradient(160deg,#ffffff 0,#e0f2fe 45%,#eff6ff 100%);
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 6px 18px rgba(15,23,42,0.08);
+  border:1px solid rgba(148,163,184,0.2);
+}
+
+.sidebar-title-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(15,23,42,0.06);
+  font-size:0.8rem;
+  color:#1f2937;
+}
+
+/* Accordion tweaks */
+.accordion-button{
+  font-size:0.9rem;
+  font-weight:600;
+  padding:0.6rem 0.75rem;
+  background:transparent;
+}
+.accordion-button:not(.collapsed){
+  background:rgba(14,165,233,0.08);
+  color:#0f172a;
+  box-shadow:none;
+}
+.accordion-item{
+  background:transparent;
+  border:none;
+  border-bottom:1px dashed rgba(148,163,184,0.6);
+}
+
+/* NEWS CARDS */
+.news-card{
+  background:var(--card);
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 4px 12px rgba(2,80,140,0.05);
+  transition:0.25s ease;
+}
+.news-card:hover{
+  transform: translateY(-4px);
+  box-shadow:0 8px 20px rgba(2,80,140,0.12);
+}
+
+.news-img {
+  height:170px;
+  width:100%;
+  object-fit:cover;
+  background:#dce8f7;
+}
+
+.badge-real {
+  background:rgba(16,185,129,0.15);
+  color:var(--success);
+  padding:5px 9px;
+  border-radius:50px;
+  font-size:0.8rem;
+  font-weight:600;
+}
+.badge-fake {
+  background:rgba(239,68,68,0.15);
+  color:var(--danger);
+  padding:5px 9px;
+  border-radius:50px;
+  font-size:0.8rem;
+  font-weight:600;
+}
+
+.btn-azure {
+  background:var(--primary);
+  color:white;
+  border-radius:999px;
+  border:none;
+  padding:9px;
+  font-weight:600;
+}
+.btn-azure:hover {
+  background:var(--secondary);
+}
+
+.report-btn {
+  color:#ef4444;
+  font-size:0.85rem;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+.cred-pill {
+  padding:3px 7px;
+  border-radius:999px;
+  font-size:0.7rem;
+  font-weight:600;
+}
+.cred-high {
+  background:rgba(16,185,129,0.15);
+  color:#166534;
+}
+.cred-medium {
+  background:#fef3c7;
+  color:#92400e;
+}
+.cred-low {
+  background:#fee2e2;
+  color:#991b1b;
+}
+</style>
+</head>
+
+<body>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg py-3">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold text-primary" href="{{ url_for('home_page') }}">VeriFact AI</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('home_page') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('about_page') }}">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('features_page') }}">Features</a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('contact_page') }}">Contact</a>
+        </li> -->
+      </ul>
+
+      <div class="d-flex align-items-center gap-3">
+        <span class="fw-semibold">Hi, <span id="usernameDisplay">{{ username }}</span></span>
+        <a href="{{ url_for('profile_page') }}" class="btn btn-outline-primary btn-sm">Profile</a>
+        <a href="{{ url_for('route_logout_get') }}" class="btn btn-danger btn-sm">Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+
+    <!-- SIDEBAR -->
+    <aside class="col-lg-3 mb-4">
+      <div class="sidebar-box" id="preferences">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <div class="sidebar-title-pill">
+              <i class="fa-solid fa-sliders"></i>
+              <span>Feed Controls</span>
+            </div>
+            <h5 class="fw-bold mt-2 mb-1">Personalize Your Feed</h5>
+            <p class="text-muted small mb-2">Choose which topics & sources appear in your news feed.</p>
+          </div>
+        </div>
+
+        <div class="accordion" id="prefsAccordion">
+          <!-- Topics (Preferences) -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTopics">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#collapseTopics" aria-expanded="false" aria-controls="collapseTopics">
+                <i class="fa-solid fa-layer-group me-2 text-primary"></i> Topics you care about
+              </button>
+            </h2>
+            <div id="collapseTopics" class="accordion-collapse collapse show" aria-labelledby="headingTopics" data-bs-parent="#prefsAccordion">
+              <div class="accordion-body pt-2 pb-1">
+                <div id="topicsCheckboxes" class="d-flex flex-column gap-1"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sources -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingSources">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#collapseSources" aria-expanded="false" aria-controls="collapseSources">
+                <i class="fa-solid fa-newspaper me-2 text-primary"></i> Sources you trust
+              </button>
+            </h2>
+            <div id="collapseSources" class="accordion-collapse collapse" aria-labelledby="headingSources" data-bs-parent="#prefsAccordion">
+              <div class="accordion-body pt-2 pb-1">
+                <div id="sourcesCheckboxes" class="d-flex flex-column gap-1"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View Type + Topic Filter (checkbox grid) -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingView">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#collapseView" aria-expanded="false" aria-controls="collapseView">
+                <i class="fa-solid fa-filter-circle-dollar me-2 text-primary"></i> View type & filters
+              </button>
+            </h2>
+            <div id="collapseView" class="accordion-collapse collapse" aria-labelledby="headingView" data-bs-parent="#prefsAccordion">
+              <div class="accordion-body pt-2 pb-1">
+                <label class="form-label small mb-1">Verification filter</label>
+                <select id="viewTypeSelect" class="form-select form-select-sm mb-2">
+                  <option value="all">All news</option>
+                  <option value="verified">Verified only</option>
+                </select>
+                <p class="text-muted small mb-2">
+                  <i class="fa-solid fa-circle-info me-1"></i>
+                  “Verified” shows only articles the model labels as <strong>Real/True</strong>.
+                </p>
+
+                <label class="form-label small mb-1">Topic filters</label>
+                <div id="topicFilterBox" class="row row-cols-2 g-1 small">
+                  <!-- filter checkboxes from JS -->
+                </div>
+                <p class="text-muted small mt-2 mb-0">
+                  Tick one or more topics (e.g., <strong>Technology</strong>, <strong>Business</strong>).  
+                  If nothing is ticked, all topics are shown.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button id="savePreferencesBtn" class="btn-azure w-100 mt-3">
+          <i class="fa-solid fa-arrows-rotate me-1"></i> Save & Refresh
+        </button>
+        <p id="prefSaveMsg" class="text-success small mt-2"></p>
+
+        <hr class="my-3">
+        <button id="refreshFeedBtn" class="btn btn-outline-primary btn-sm w-100">
+          <i class="fa-solid fa-rotate me-1"></i> Refresh Feed
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="col-lg-9 px-4">
+      <h3 class="fw-bold">Your News Feed</h3>
+      <p class="text-muted">Based on your preferences</p>
+
+      <span id="newsStatus" class="text-muted small">Loading...</span>
+
+      <div class="row g-4 mt-3" id="newsFeedContainer"></div>
+
+      <!-- No results -->
+      <div id="noResultsBox" class="text-center d-none mt-5">
+        <h5>No articles match your filters</h5>
+        <p class="text-muted">Try showing all news</p>
+        <button class="btn btn-outline-primary" id="btnShowAll">Show All</button>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<script>
+// ---------------- PREF OPTIONS ------------------
+const availableTopics = [
+  "Technology","Science","Politics","Economics","Health","Environment",
+  "Sports","Business","Entertainment","World","Local","Crime"
+];
+const availableSources = [
+  "BBC News","CNN","Reuters","The Guardian","The New York Times",
+  "Al Jazeera","Bloomberg","TechCrunch","ESPN","Science Daily"
+];
+
+// store last fetched articles for client-side topic filter
+let allArticles = [];
+
+function api(path, opts={}) {
+  return fetch(path, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    ...opts
+  }).then(async res => ({ok: res.ok, json: await res.json().catch(()=>({}))}));
+}
+
+// populate topic filter checkbox grid
+function renderTopicFilterChecks(){
+  const box = document.getElementById("topicFilterBox");
+  if(!box) return;
+  box.innerHTML = "";
+  availableTopics.forEach(t=>{
+    box.insertAdjacentHTML("beforeend", `
+      <div class="col">
+        <label class="d-flex align-items-center gap-1">
+          <input type="checkbox" value="${t}">
+          <span>${t}</span>
+        </label>
+      </div>
+    `);
+  });
+}
+
+// ---------------- RENDER CHECKBOXES FOR PREFS ----------------
+function renderPreferencesUI(prefs) {
+  const tbox = document.getElementById("topicsCheckboxes");
+  const sbox = document.getElementById("sourcesCheckboxes");
+
+  tbox.innerHTML = "";
+  availableTopics.forEach(t => {
+    tbox.insertAdjacentHTML("beforeend", `
+      <label class="small"><input type="checkbox" value="${t}" ${prefs.topics.includes(t)?"checked":""}> ${t}</label>
+    `);
+  });
+
+  sbox.innerHTML = "";
+  availableSources.forEach(s => {
+    sbox.insertAdjacentHTML("beforeend", `
+      <label class="small"><input type="checkbox" value="${s}" ${prefs.sources.includes(s)?"checked":""}> ${s}</label>
+    `);
+  });
+
+  document.getElementById("viewTypeSelect").value = prefs.type || "all";
+}
+
+// ---------------- LOAD PREFS ----------------
+async function loadPreferences() {
+  const res = await api("/user/preferences");
+  if(res.ok) renderPreferencesUI(res.json);
+}
+
+// ---------------- SAVE PREFS ----------------
+document.getElementById("savePreferencesBtn").onclick = async ()=>{
+  const topics = [...document.querySelectorAll("#topicsCheckboxes input:checked")].map(i=>i.value);
+  const sources = [...document.querySelectorAll("#sourcesCheckboxes input:checked")].map(i=>i.value);
+  const type = document.getElementById("viewTypeSelect").value;
+
+  await api("/user/preferences", {
+    method:"PUT",
+    body: JSON.stringify({topics,sources,type})
+  });
+
+  document.getElementById("prefSaveMsg").innerText = "Preferences saved!";
+  fetchNews();
+};
+
+// ---------------- HELPERS ----------------
+function cleanSnippet(text){
+  if(!text) return "";
+  const cleaned = text
+    .replace(/window\.open\(.*?\);/gi,"")
+    .replace(/\[\+\d+\s*chars\]/gi,"")
+    .replace(/<\/?[^>]+(>|$)/g,"")
+    .replace(/\s+/g," ")
+    .trim();
+  if(!cleaned) return "";
+  return cleaned.length > 200 ? cleaned.slice(0,200) + "…" : cleaned;
+}
+
+function credibilityPill(label, score){
+  if(label == null || score == null) return "";
+  let cls = "cred-low";
+  if(label.includes("High")) cls = "cred-high";
+  else if(label.includes("Medium")) cls = "cred-medium";
+  const perc = (score*100).toFixed(0);
+  return `<span class="cred-pill ${cls}">${label} (${perc}%)</span>`;
+}
+
+// ---------------- FETCH NEWS ----------------
+async function fetchNews() {
+  document.getElementById("newsStatus").innerText = "Loading...";
+  document.getElementById("noResultsBox").classList.add("d-none");
+
+  const res = await api("/news?ts=" + Date.now());
+
+  if(!res.ok){
+    document.getElementById("newsStatus").innerText = "Failed loading news";
+    return;
+  }
+
+  allArticles = res.json;      // save for topic filter
+  renderNews(allArticles);
+}
+
+// ---------------- RENDER NEWS CARDS ----------------
+function renderNews(list){
+  const container = document.getElementById("newsFeedContainer");
+  container.innerHTML = "";
+
+  // apply topic filter via ticked checkboxes
+  const box = document.getElementById("topicFilterBox");
+  let filtered = list;
+  if (box) {
+    const selectedTopics = [...box.querySelectorAll("input:checked")].map(i => i.value.toLowerCase());
+    if (selectedTopics.length > 0) {
+      filtered = list.filter(a => {
+        const artTopic = (a.topic || "").toString().toLowerCase();
+        return selectedTopics.includes(artTopic);
+      });
+    }
+  }
+
+  if(!filtered.length){
+    document.getElementById("noResultsBox").classList.remove("d-none");
+    document.getElementById("newsStatus").innerText = "";
+    return;
+  } else {
+    document.getElementById("noResultsBox").classList.add("d-none");
+  }
+
+  filtered.forEach(a=>{
+    const img = a.image_url || "/static/images/default-news.jpg";
+
+    // Normalize prediction
+    const rawPred = (a.prediction || "").toString().toUpperCase();
+    const isReal = rawPred === "TRUE" || rawPred === "REAL";
+    const labelText = isReal ? "Real" : "Fake";
+    const badgeClass = isReal ? "badge-real" : "badge-fake";
+
+    const conf = (a.confidence != null) ? (a.confidence*100).toFixed(1) : "–";
+    const snippet = cleanSnippet(a.summary || a.description || a.content);
+    const cred = credibilityPill(a.credibility_label, a.credibility_score);
+
+    container.insertAdjacentHTML("beforeend", `
+      <div class="col-md-6 col-lg-4">
+        <div class="news-card">
+          <img src="${img}" class="news-img" alt="news image">
+
+          <div class="p-3">
+            <small class="text-muted d-flex justify-content-between">
+              <span>${a.source || ""}</span>
+              <span>${a.published_at || ""}</span>
+            </small>
+
+            <h6 class="fw-bold mt-2">${a.title || ""}</h6>
+            <p class="text-muted small">${snippet}</p>
+
+            <div class="d-flex align-items-center justify-content-between mt-1">
+              <div class="d-flex flex-column gap-1">
+                <span class="${badgeClass}">
+                  ${labelText} • ${conf}%
+                </span>
+                ${cred ? `<span>${cred}</span>` : ""}
+              </div>
+
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-outline-secondary" onclick="saveArticle('${a.url}')">
+                  Save
+                </button>
+                <a href="${a.url}" target="_blank" class="btn btn-sm btn-outline-primary">Read</a>
+              </div>
+            </div>
+
+            <div class="mt-2 report-btn" onclick="reportFake('${a.url}')">Report Fake</div>
+          </div>
+        </div>
+      </div>
+    `);
+  });
+
+  document.getElementById("newsStatus").innerText = "";
+}
+
+// ---------------- REPORT ----------------
+function reportFake(url){
+  if(!confirm("Report this article as fake?")) return;
+
+  api("/report",{
+    method:"POST",
+    body: JSON.stringify({url, label:"Fake", reason:"Reported from dashboard"})
+  }).then(res=>{
+    alert(res.json.message || "Reported!");
+  }).catch(()=>{
+    alert("Error reporting article.");
+  });
+}
+
+// ---------------- SAVE ARTICLE ----------------
+// function saveArticle(url){
+//   api("/save_article",{
+//     method:"POST",
+//     body: JSON.stringify({url})
+//   }).then(res=>{
+//     alert(res.json.message || "Saved!");
+//   }).catch(()=>{
+//     alert("Error saving article.");
+//   });
+// }
+
+// ---------------- SAVE ARTICLE ----------------
+// function saveArticle(url){
+//   // find full article object by url from allArticles
+//   const article = allArticles.find(a => a.url === url) || {};
+
+//   api("/save_article",{
+//     method:"POST",
+//     body: JSON.stringify({
+//       url: url,
+//       title: article.title,
+//       source: article.source,
+//       published_at: article.published_at,
+//       prediction: article.prediction,
+//       confidence: article.confidence
+//     })
+//   }).then(res=>{
+//     if (!res.ok) {
+//       alert(res.json.message || "Error saving article.");
+//       return;
+//     }
+//     alert(res.json.message || "Saved to your profile!");
+//   }).catch(()=>{
+//     alert("Error saving article.");
+//   });
+// }
+// ---------------- SAVE ARTICLE ----------------
+function saveArticle(url){
+  // find full article data from allArticles
+  const article = allArticles.find(a => a.url === url) || {};
+
+  api("/save_article", {
+    method: "POST",
+    body: JSON.stringify({
+      url: url,
+      title: article.title,
+      source: article.source,
+      published_at: article.published_at,
+      prediction: article.prediction,
+      confidence: article.confidence
+    })
+  }).then(res => {
+    if (!res.ok) {
+      alert(res.json.message || "Error saving article.");
+      return;
+    }
+    alert(res.json.message || "Saved to your profile!");
+  }).catch(() => {
+    alert("Error saving article.");
+  });
+}
+
+
+// // Initial load
+(async ()=>{
+  renderTopicFilterChecks();
+  await loadPreferences();
+  await fetchNews();
+})();
+// Auto refresh every 60 seconds
+setInterval(fetchNews, 60 * 1000);
+
+
+document.getElementById("refreshFeedBtn").onclick = fetchNews;
+
+document.getElementById("btnShowAll").onclick = ()=>{
+  document.getElementById("viewTypeSelect").value = "all";
+  const box = document.getElementById("topicFilterBox");
+  if (box) {
+    [...box.querySelectorAll("input")].forEach(i => i.checked = false);
+  }
+  renderNews(allArticles);
+};
+
+// Re-render when ticking/un-ticking topic filters
+const topicFilterBox = document.getElementById("topicFilterBox");
+if (topicFilterBox) {
+  topicFilterBox.addEventListener("change", () => {
+    renderNews(allArticles);
+  });
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
