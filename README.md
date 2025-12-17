@@ -160,7 +160,7 @@ Preprocessed to remove noise, duplicates, and missing values
 
 ⚙️ Installation & Setup
 1️⃣ Clone the Repository
-git clone https://github.com/your-username/ai-fake-news-detection.git
+git clone https://github.com/Divya-Gupta17/AI-Fake-News-Detection-System.git
 cd ai-fake-news-detection
 
 2️⃣ Create Virtual Environment
